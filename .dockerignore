@@ -1,0 +1,8 @@
+# Ignore specific files
+*.db
+
+# Ignore specific directories
+app/static/
+app/logs/
+app/tests/
+venv/
