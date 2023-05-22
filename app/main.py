@@ -1,11 +1,15 @@
-from fastapi import FastAPI, File, UploadFile, responses
+import logging
+from fastapi import FastAPI, File, UploadFile, responses, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 # imports
-from databases.db import cursor, conn
-from utils.logger import logging
-from api.routes import item_router
+from app.databases.db import conn, cursor
+from app.api.routes import item_router
+from app.utils.logger import logging
+from app.utils.middleware import LoggingMiddleware
+
+# Add middleware
 
 # Create a table if it doesn't exist
 cursor.execute('''
@@ -19,6 +23,7 @@ conn.commit()
 
 app = FastAPI()
 
+app.add_middleware(LoggingMiddleware)
 app.include_router(item_router)
 
 # Mount the 'static' folder to serve static files
@@ -34,10 +39,10 @@ async def read_root():
     return {"message": "Server running!"}
 
 @app.get("/home")
-async def read_home():
+async def read_home(request: Request):
     # Example log message
     logging.info("Received request on the home route.")
-    return templates.TemplateResponse("index.html", {"title": "home"})
+    return templates.TemplateResponse("index.html", {"request": request, "title": "home"})
 
 # file upload route
 @app.post("/uploader/")

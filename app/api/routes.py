@@ -1,7 +1,7 @@
 from fastapi import APIRouter
-from databases.db import cursor, conn
-from utils.logger import logging
-from databases.models import Item
+from app.databases.db import cursor, conn
+from app.utils.logger import logging
+from app.databases.models import Item
 
 item_router = APIRouter(
     prefix="/items",
@@ -11,21 +11,15 @@ item_router = APIRouter(
 
 @item_router.get("/")
 async def get_items():
-    # Example log message
-    logging.info("Received request on the items route.")
-
     # Retrieve all items from the database
     cursor.execute("SELECT * FROM items")
     items = cursor.fetchall()
-
+    logging.debug(f"Retrieved items: {items}")
     return {"items": items}
 
 
 @item_router.post("/")
 async def add_item(item: Item):
-    # Example log message
-    logging.info(f"Received request to add item: {item}")
-
     # Insert the item into the database
     cursor.execute("INSERT INTO items (name, description) VALUES (?, ?)", (item.name, item.description))
     conn.commit()
@@ -34,9 +28,6 @@ async def add_item(item: Item):
 
 @item_router.delete("/{item_id}")
 async def delete_item(item_id: int):
-    # Example log message
-    logging.info(f"Received request to delete item with id: {item_id}")
-
     # Delete the item from the database
     cursor.execute("DELETE FROM items WHERE id=?", (item_id,))
     conn.commit()
