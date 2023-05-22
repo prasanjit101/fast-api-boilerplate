@@ -40,7 +40,7 @@ class Item(BaseModel):
 async def read_root():
     # Example log message
     logging.info("Received request on the root route.")
-    return {"message": "Server created!"}
+    return {"message": "Server running!"}
 
 @app.get("/home")
 async def read_home():
@@ -90,3 +90,13 @@ async def add_item(item: Item):
 
     return {"message": "Item added successfully"}
 
+@app.delete("/items/{item_id}")
+async def delete_item(item_id: int):
+    # Example log message
+    logging.info(f"Received request to delete item with id: {item_id}")
+
+    # Delete the item from the database
+    cursor.execute("DELETE FROM items WHERE id=?", (item_id,))
+    conn.commit()
+
+    return {"message": "Item deleted successfully"}

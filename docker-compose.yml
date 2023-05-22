@@ -8,3 +8,5 @@ services:
       - '8000:8000'
     volumes:
       - .:/app
+    restart: on-failure
+    command: uvicorn app.main:app --host 0.0.0.0 --reload
